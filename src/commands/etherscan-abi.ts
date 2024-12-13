@@ -2,7 +2,7 @@ import { Command } from '@commander-js/extra-typings';
 import { log } from '../utils/logger.ts';
 import { providers } from 'ethers';
 import { getAbi } from '../utils/etherscan.ts';
-import { assertDefined, getProxyAddress } from '../utils/misc.ts';
+import { assertDefined, getProxyImpl } from '../utils/misc.ts';
 import { Interface } from 'ethers/lib/utils';
 
 export function etherscanAbiCommand(program: Command) {
@@ -16,7 +16,7 @@ export function etherscanAbiCommand(program: Command) {
     .action(async (addr: string, options) => {
       const provider = new providers.JsonRpcProvider(assertDefined(options.rpc, 'Please specify --rpc'));
       const chainId = (await provider.getNetwork()).chainId;
-      addr = options.proxy ? await getProxyAddress(provider, addr) : addr;
+      addr = options.proxy ? await getProxyImpl(provider, addr) : addr;
       const abi = await getAbi(chainId, addr);
 
       if (options.interface) {

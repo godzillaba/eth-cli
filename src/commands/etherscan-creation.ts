@@ -5,12 +5,12 @@ import { getContractCreation } from '../utils/etherscan.ts';
 
 export function etherscanCreationCommand(program: Command) {
   program
-    .command('etherscan-contract-creation')
+    .command('etherscan-creation')
     .description('Get information about contract creation transactions')
-    .argument('<addresses>', 'Comma-separated list of contract addresses')
+    .argument('<address>', 'Ccontract address')
     .option('-c, --chain <CHAIN>', 'Chain ID')
     .option('-r, --rpc <RPC>', 'RPC URL')
-    .action(async (addrs: string, options) => {
+    .action(async (addr: string, options) => {
       if (!options.chain && !options.rpc) {
         log.error('Please specify --chain or --rpc');
         process.exit(1);
@@ -24,6 +24,6 @@ export function etherscanCreationCommand(program: Command) {
         chainId = (await provider.getNetwork()).chainId;
       }
 
-      log.info(JSON.stringify(await getContractCreation(chainId, addrs.split(',')), null, 2));
+      log.info(JSON.stringify((await getContractCreation(chainId, [addr]))[0], null, 2));
     });
 }
