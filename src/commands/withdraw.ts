@@ -2,6 +2,7 @@ import { Command } from '@commander-js/extra-typings';
 import { log } from '../utils/logger.ts';
 import { providers, Wallet } from 'ethers';
 import { ChildToParentMessageWriter, ChildTransactionReceipt } from '@arbitrum/sdk';
+import { assertDefined } from '../utils/misc.ts';
 
 export function withdrawCommand(program: Command) {
   program
@@ -53,12 +54,4 @@ export function withdrawCommand(program: Command) {
         }
       }
     });
-}
-
-function assertDefined<T>(value: T | undefined | null, message: string): T {
-  if (value === undefined || value === null) {
-    log.error(message);
-    process.exit(1);
-  }
-  return value;
 }
