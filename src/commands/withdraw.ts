@@ -21,9 +21,9 @@ export function withdrawCommand(program: Command) {
         process.exit(1);
       }
 
-      const privateKey = assertDefinedString(options.key || process.env.PRIVATE_KEY, 'Private key is required');
-      const childChainRpc = assertDefinedString(options.childRpc, 'Child chain RPC URL is required');
-      const parentChainRpc = assertDefinedString(options.parentRpc, 'Parent chain RPC URL is required');
+      const privateKey = assertDefined(options.key || process.env.PRIVATE_KEY, 'Private key is required');
+      const childChainRpc = assertDefined(options.childRpc, 'Child chain RPC URL is required');
+      const parentChainRpc = assertDefined(options.parentRpc, 'Parent chain RPC URL is required');
 
       const childProvider = new providers.JsonRpcProvider(childChainRpc);
       const parentProvider = new providers.JsonRpcProvider(parentChainRpc);
@@ -53,14 +53,6 @@ export function withdrawCommand(program: Command) {
         }
       }
     });
-}
-
-function assertDefinedString(value: any, message: string): string {
-  if (!value || typeof value !== 'string') {
-    log.error(message);
-    process.exit(1);
-  }
-  return value;
 }
 
 function assertDefined<T>(value: T | undefined | null, message: string): T {
