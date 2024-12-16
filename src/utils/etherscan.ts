@@ -33,7 +33,7 @@ async function hitApiEndpoint(chainId: number, query: string) {
   const response = await fetch(`${url}?${query}&apikey=${apiKey}`)
   const json = await response.json()
   if (!json.result) {
-    throw new Error(json.message)
+    throw new Error(`${url}?${query}\n${JSON.stringify(json)}`)
   }
   return json.result
 }
