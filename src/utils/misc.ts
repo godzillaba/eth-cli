@@ -30,3 +30,14 @@ export function wordToAddr(word: string) {
   }
   return getAddress('0x' + word.slice(26))
 }
+
+export function stripMetadataHash(bytecode: string) {
+  // sed -E 's/a264697066735822[a-fA-F0-9]{64}.*$//'
+  const prefix = 'a264697066735822'
+  const idx = bytecode.indexOf(prefix)
+  if (idx === -1) {
+    console.error('Metadata hash not found')
+    return bytecode
+  }
+  return bytecode.slice(0, idx) + bytecode.slice(idx + prefix.length + 128)
+}

@@ -7,7 +7,7 @@ import {
   getAddress,
   getContractAddress,
 } from 'ethers/lib/utils'
-import { getProxyImpl } from '../utils/misc.ts'
+import { getProxyImpl, stripMetadataHash } from '../utils/misc.ts'
 
 function getContractName(artifact: any) {
   if (artifact.contractName) {
@@ -26,6 +26,18 @@ function getBytecode(artifact: any) {
   }
 
   throw new Error('Cannot find bytecode')
+}
+
+// todo: create2 factories
+function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
+  if (!tx.to) {
+    return {
+      bytecode: tx.data,
+      address: getContractAddress(tx),
+    }
+  } else {
+    throw new Error('Not a creation transaction')
+  }
 }
 
 export function verifyBytecodeCommand(program: Command) {
@@ -79,17 +91,26 @@ export function verifyBytecodeCommand(program: Command) {
       }
 
       // make sure the resulting contract address is the same as the one we are verifying
-      if (getContractAddress(tx) !== addr) {
-        throw new Error(
-          `Contract address mismatch. Expected ${addr}, got ${getContractAddress(tx)}`
-        )
+      // and get the deployment bytecode
+      const { bytecode, address } = getDeploymentBytecodeAndAddress(tx)
+      if (address !== addr) {
+        throw new Error('Address mismatch')
       }
 
       // make sure the artifact bytecode is a prefix of the tx input data
       const artifactBytecode = getBytecode(artifact)
-      if (!tx.data.startsWith(artifactBytecode)) {
-        log.error('Bytecode mismatch')
-        process.exit(1)
+      let fullVerification: boolean
+
+      if (bytecode.startsWith(artifactBytecode)) {
+        fullVerification = true
+      } else if (
+        stripMetadataHash(bytecode).startsWith(
+          stripMetadataHash(artifactBytecode)
+        )
+      ) {
+        fullVerification = false
+      } else {
+        throw new Error('Bytecode mismatch')
       }
 
       // decode the constructor arguments and display them
@@ -98,7 +119,7 @@ export function verifyBytecodeCommand(program: Command) {
       )
       const decoded = defaultAbiCoder.decode(
         constructorAbi.inputs,
-        '0x' + tx.data.slice(artifactBytecode.length)
+        '0x' + bytecode.slice(artifactBytecode.length)
       )
       log.info('Constructor arguments:')
       for (let i = 0; i < constructorAbi.inputs.length; i++) {
@@ -107,6 +128,10 @@ export function verifyBytecodeCommand(program: Command) {
         )
       }
 
-      log.success('Bytecode verified')
+      log.success(
+        fullVerification
+          ? 'Bytecode verified'
+          : 'Bytecode verified (excluding metadata hash)'
+      )
     })
 }
