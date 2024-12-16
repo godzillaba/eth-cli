@@ -7,7 +7,7 @@ import {
   getAddress,
   getContractAddress,
 } from 'ethers/lib/utils'
-import { getProxyImpl, stripMetadataHash } from '../utils/misc.ts'
+import { extractMetadata, getProxyImpl } from '../utils/misc.ts'
 
 function getContractName(artifact: any) {
   if (artifact.contractName) {
@@ -26,6 +26,17 @@ function getBytecode(artifact: any) {
   }
 
   throw new Error('Cannot find bytecode')
+}
+
+function getDeployedBytecode(artifact: any) {
+  if (typeof artifact.deployedBytecode === 'string') {
+    return artifact.deployedBytecode
+  }
+  if (typeof artifact.deployedBytecode.object === 'string') {
+    return artifact.deployedBytecode.object
+  }
+
+  throw new Error('Cannot find deployed bytecode')
 }
 
 // todo: create2 factories
@@ -97,20 +108,26 @@ export function verifyBytecodeCommand(program: Command) {
         throw new Error('Address mismatch')
       }
 
-      // make sure the artifact bytecode is a prefix of the tx input data
+      // make sure the artifact bytecode is a prefix of the deployment bytecode
       const artifactBytecode = getBytecode(artifact)
-      let fullVerification: boolean
-
+      let fullVerification = false
       if (bytecode.startsWith(artifactBytecode)) {
         fullVerification = true
-      } else if (
-        stripMetadataHash(bytecode).startsWith(
-          stripMetadataHash(artifactBytecode)
-        )
-      ) {
-        fullVerification = false
       } else {
-        throw new Error('Bytecode mismatch')
+        // try partial verification
+
+        // get artifact metadata
+        const artifactMetadata = extractMetadata(getDeployedBytecode(artifact))
+        // get onchain metadata. use the deployed bytecode, not the tx data
+        const onchainMetadata = extractMetadata(await provider.getCode(addr))
+
+        // remove metadata from both and compare
+        const artifactBytecodeNoMetadata = artifactBytecode.replace(artifactMetadata, '')
+        const bytecodeNoMetadata = bytecode.replace(onchainMetadata, '')
+
+        if (!bytecodeNoMetadata.startsWith(artifactBytecodeNoMetadata)) {
+          throw new Error('Bytecode mismatch')
+        }
       }
 
       // decode the constructor arguments and display them
@@ -131,7 +148,7 @@ export function verifyBytecodeCommand(program: Command) {
       log.success(
         fullVerification
           ? 'Bytecode verified'
-          : 'Bytecode verified (excluding metadata hash)'
+          : 'Bytecode verified (excluding metadata)'
       )
     })
 }

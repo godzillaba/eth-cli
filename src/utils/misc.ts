@@ -31,13 +31,11 @@ export function wordToAddr(word: string) {
   return getAddress('0x' + word.slice(26))
 }
 
-export function stripMetadataHash(bytecode: string) {
-  // sed -E 's/a264697066735822[a-fA-F0-9]{64}.*$//'
-  const prefix = 'a264697066735822'
-  const idx = bytecode.indexOf(prefix)
-  if (idx === -1) {
-    console.error('Metadata hash not found')
-    return bytecode
-  }
-  return bytecode.slice(0, idx) + bytecode.slice(idx + prefix.length + 128)
+/**
+ * Extract the metadata hash from the bytecode. MUST BE DEPLOYED BYTECODE, NOT DEPLOYMENT BYTECODE.
+ */
+export function extractMetadata(bytecode: string) {
+  // get length from last 2 bytes
+  const len = parseInt(bytecode.slice(-4), 16)
+  return bytecode.slice(-4 - len * 2)
 }
