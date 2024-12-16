@@ -122,11 +122,15 @@ export function verifyBytecodeCommand(program: Command) {
         const onchainMetadata = extractMetadata(await provider.getCode(addr))
 
         // remove metadata from both and compare
-        const artifactBytecodeNoMetadata = artifactBytecode.replace(artifactMetadata, '')
+        const artifactBytecodeNoMetadata = artifactBytecode.replace(
+          artifactMetadata,
+          ''
+        )
         const bytecodeNoMetadata = bytecode.replace(onchainMetadata, '')
 
         if (!bytecodeNoMetadata.startsWith(artifactBytecodeNoMetadata)) {
-          throw new Error('Bytecode mismatch')
+          log.error('Bytecode mismatch')
+          process.exit(1)
         }
       }
 
