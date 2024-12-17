@@ -138,15 +138,17 @@ export function verifyBytecodeCommand(program: Command) {
       const constructorAbi = artifact.abi.find(
         (abi: any) => abi.type === 'constructor'
       )
-      const decoded = defaultAbiCoder.decode(
-        constructorAbi.inputs,
-        '0x' + bytecode.slice(artifactBytecode.length)
-      )
-      log.info('Constructor arguments:')
-      for (let i = 0; i < constructorAbi.inputs.length; i++) {
-        log.info(
-          `${constructorAbi.inputs[i].type} ${constructorAbi.inputs[i].name}:\n  ${decoded[i]}`
+      if (constructorAbi && constructorAbi.inputs) {
+        const decoded = defaultAbiCoder.decode(
+          constructorAbi.inputs,
+          '0x' + bytecode.slice(artifactBytecode.length)
         )
+        log.info('Constructor arguments:')
+        for (let i = 0; i < constructorAbi.inputs.length; i++) {
+          log.info(
+            `${constructorAbi.inputs[i].type} ${constructorAbi.inputs[i].name}:\n  ${decoded[i]}`
+          )
+        }
       }
 
       log.success(
