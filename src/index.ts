@@ -5,6 +5,7 @@ import { etherscanAbiCommand } from './commands/etherscan-abi.ts'
 import { proxyAdminCommand } from './commands/proxy-admin.ts'
 import { proxyImplCommand } from './commands/proxy-impl.ts'
 import { verifyBytecodeCommand } from './commands/verify-bytecode.ts'
+import { zeroBytesCommand } from './commands/zb.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -15,5 +16,6 @@ etherscanAbiCommand(program)
 proxyAdminCommand(program)
 proxyImplCommand(program)
 verifyBytecodeCommand(program)
+zeroBytesCommand(program)
 
 program.parse()
