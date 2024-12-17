@@ -4,7 +4,7 @@ import { formatEther } from 'ethers/lib/utils'
 
 export function toEtherCommand(program: Command) {
   program
-    .command('to-ether')
+    .command('to-eth')
     .description('Convert wei into ether')
     .argument('[WEI]', 'Wei amount. Default reads from stdin')
     .action(async (wei: string | undefined) => {
