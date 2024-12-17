@@ -8,6 +8,7 @@ import {
   getContractAddress,
 } from 'ethers/lib/utils'
 import { extractMetadata, getProxyImpl } from '../utils/misc.ts'
+import { promises as fs } from 'fs'
 
 function getContractName(artifact: any) {
   if (artifact.contractName) {
@@ -65,7 +66,7 @@ export function verifyBytecodeCommand(program: Command) {
     .action(async (addr: string, artifactFile: string, options) => {
       const provider = new providers.JsonRpcProvider(options.rpc)
 
-      const artifact = require(artifactFile)
+      const artifact = JSON.parse((await fs.readFile(artifactFile)).toString())
       log.info(`Contract Name: ${getContractName(artifact)}`)
 
       addr = getAddress(addr)
