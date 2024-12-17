@@ -56,7 +56,7 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
 function prettifyInput(inputAbi: any, result: Result, leadingTabs: number) {
   if (inputAbi.internalType.startsWith('struct')) {
     // we are printing a struct
-    let res = `${'  '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}:\n`
+    let res = `${'    '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}:\n`
     for (let i = 0; i < inputAbi.components.length; i++) {
       res +=
         prettifyInput(inputAbi.components[i], result[i], leadingTabs + 1) + '\n'
@@ -64,7 +64,7 @@ function prettifyInput(inputAbi: any, result: Result, leadingTabs: number) {
     return res.slice(0, -1)
   } else {
     // we're printing elementary
-    return `${'  '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}: ${result}`
+    return `${'    '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}: ${result}`
   }
 }
 
