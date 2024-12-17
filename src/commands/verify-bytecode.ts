@@ -6,6 +6,7 @@ import {
   defaultAbiCoder,
   getAddress,
   getContractAddress,
+  type Result,
 } from 'ethers/lib/utils'
 import { extractMetadata, getProxyImpl } from '../utils/misc.ts'
 import { promises as fs } from 'fs'
@@ -49,6 +50,21 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
     }
   } else {
     throw new Error('Not a creation transaction')
+  }
+}
+
+function prettifyInput(inputAbi: any, result: Result, leadingTabs: number) {
+  if (inputAbi.internalType.startsWith('struct')) {
+    // we are printing a struct
+    let res = `${'  '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}:\n`
+    for (let i = 0; i < inputAbi.components.length; i++) {
+      res +=
+        prettifyInput(inputAbi.components[i], result[i], leadingTabs + 1) + '\n'
+    }
+    return res.slice(0, -1)
+  } else {
+    // we're printing elementary
+    return `${'  '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}: ${result}`
   }
 }
 
@@ -146,9 +162,7 @@ export function verifyBytecodeCommand(program: Command) {
         )
         log.info('Constructor arguments:')
         for (let i = 0; i < constructorAbi.inputs.length; i++) {
-          log.info(
-            `${constructorAbi.inputs[i].type} ${constructorAbi.inputs[i].name}:\n  ${decoded[i]}`
-          )
+          log.info(prettifyInput(constructorAbi.inputs[i], decoded[i], 1))
         }
       }
 
