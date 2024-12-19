@@ -19,11 +19,11 @@ export function assertDefined<T>(
 export async function getProxyImpl(
   provider: providers.JsonRpcProvider,
   addr: string
-) {
+): Promise<string> {
   return wordToAddr(await provider.getStorageAt(addr, PROXY_IMPL_SLOT))
 }
 
-export function wordToAddr(word: string) {
+export function wordToAddr(word: string): string {
   if (word.length !== 66) {
     log.error('Invalid word length')
     process.exit(1)
@@ -33,8 +33,9 @@ export function wordToAddr(word: string) {
 
 /**
  * Extract the metadata hash from the bytecode. MUST BE DEPLOYED BYTECODE, NOT DEPLOYMENT BYTECODE.
+ * Includes the 2 byte length suffix.
  */
-export function extractMetadata(bytecode: string) {
+export function extractMetadata(bytecode: string): string {
   // get length from last 2 bytes
   const len = parseInt(bytecode.slice(-4), 16)
   return bytecode.slice(-4 - len * 2)

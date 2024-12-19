@@ -7,8 +7,8 @@ import { Interface } from 'ethers/lib/utils'
 
 export function etherscanAbiCommand(program: Command) {
   program
-    .command('etherscan-abi')
-    .description('Get ABI a contract')
+    .command('es-abi')
+    .description('Get ABI of a contract from etherscan')
     .argument('<ADDRESS>', 'Ccontract address')
     .option('-p, --proxy', 'Get the proxy implementation ABI')
     .option('-r, --rpc <RPC>', 'RPC URL')
