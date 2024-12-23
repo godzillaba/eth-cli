@@ -15,8 +15,11 @@ function getContractName(artifact: any) {
   if (artifact.contractName) {
     return artifact.contractName
   }
-  const target = Object.values(artifact.metadata.settings.compilationTarget)[0]
-  return target
+  const target = artifact.metadata?.settings?.compilationTarget
+  if (target) {
+    return Object.values(target)[0]
+  }
+  return 'Unknown'
 }
 
 function getBytecode(artifact: any) {
@@ -113,11 +116,6 @@ export function verifyBytecodeCommand(program: Command) {
       const tx = await provider.getTransaction(creationTxHash)
       log.info(`Creation transaction: ${creationTxHash}`)
 
-      // make sure it is a creation tx
-      if (tx.to) {
-        throw new Error('Not a creation transaction')
-      }
-
       // make sure the resulting contract address is the same as the one we are verifying
       // and get the deployment bytecode
       const { bytecode, address } = getDeploymentBytecodeAndAddress(tx)
@@ -152,7 +150,7 @@ export function verifyBytecodeCommand(program: Command) {
       }
 
       // decode the constructor arguments and display them
-      const constructorAbi = artifact.abi.find(
+      const constructorAbi = artifact.abi?.find(
         (abi: any) => abi.type === 'constructor'
       )
       if (constructorAbi && constructorAbi.inputs) {

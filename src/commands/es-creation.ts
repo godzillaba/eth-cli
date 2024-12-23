@@ -6,7 +6,9 @@ import { getContractCreation } from '../utils/etherscan.ts'
 export function etherscanCreationCommand(program: Command) {
   program
     .command('es-creation')
-    .description('Get information about contract creation transactions from etherscan')
+    .description(
+      'Get information about contract creation transactions from etherscan'
+    )
     .argument('<ADDRESS>', 'Ccontract address')
     .option('-c, --chain <CHAIN>', 'Chain ID')
     .option('-r, --rpc <RPC>', 'RPC URL')
