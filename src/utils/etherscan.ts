@@ -18,6 +18,7 @@ function getEtherscanUrl(chainId: number) {
   const urls: { [k: number]: string } = {
     1: 'https://api.etherscan.io/api',
     42161: 'https://api.arbiscan.io/api',
+    42170: 'https://api-nova.arbiscan.io/api',
     11155111: 'https://api-sepolia.etherscan.io/api',
     8453: 'https://api.basescan.org/api',
   }
