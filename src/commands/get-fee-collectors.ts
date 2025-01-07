@@ -6,7 +6,7 @@ import {
   getL1BaseFeeCollector,
   getL1SurplusFeeCollector,
   getL2BaseFeeCollector,
-} from '../utils/misc'
+} from '../utils/arb-precompiles'
 
 export function getFeeCollectorsCommand(program: Command) {
   program
