@@ -27,13 +27,9 @@ export function getFeeCollectorsCommand(program: Command) {
         (async () => {
           const posters = await getBatchPosters(provider)
           const l1BaseCollectorsAndRdInfo = await Promise.all(
-            posters.map(async poster => {
-              const collector = await getL1BaseFeeCollector(provider, poster)
-              return {
-                collector,
-                rdData: await getRdData(collector),
-              }
-            })
+            posters.map(poster =>
+              getRdData(getL1BaseFeeCollector(provider, poster))
+            )
           )
           return {
             posters,
@@ -41,33 +37,20 @@ export function getFeeCollectorsCommand(program: Command) {
             rdDatas: l1BaseCollectorsAndRdInfo.map(x => x.rdData),
           }
         })(),
-        (async () => {
-          const collector = await getL1SurplusFeeCollector(provider)
-          return {
-            collector,
-            rdData: await getRdData(collector),
-          }
-        })(),
-        (async () => {
-          const collector = await getL2BaseFeeCollector(provider)
-          return {
-            collector,
-            rdData: await getRdData(collector),
-          }
-        })(),
-        (async () => {
-          const collector = await getL2SurplusFeeCollector(provider)
-          return {
-            collector,
-            rdData: await getRdData(collector),
-          }
-        })(),
+        getRdData(getL1SurplusFeeCollector(provider)),
+        getRdData(getL2BaseFeeCollector(provider)),
+        getRdData(getL2SurplusFeeCollector(provider)),
       ])
-      async function getRdData(collector: string) {
-        return options.distributor &&
-          (await isRewardDistributor(collector, provider))
-          ? await getRewardDistributorRecipients(collector, provider)
-          : null
+      async function getRdData(collectorPromise: Promise<string>) {
+        const collector = await collectorPromise
+        return {
+          collector,
+          rdData:
+            options.distributor &&
+            (await isRewardDistributor(collector, provider))
+              ? await getRewardDistributorRecipients(collector, provider)
+              : null,
+        }
       }
       function fmtRdData(
         rdData: { recipients: string[]; weights: BigNumber[] } | null,
