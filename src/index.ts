@@ -8,7 +8,8 @@ import { verifyBytecodeCommand } from './commands/verify-bytecode.ts'
 import { zeroBytesCommand } from './commands/zb.ts'
 import { toEtherCommand } from './commands/to-ether.ts'
 import { aliasCommand } from './commands/alias.ts'
-import { getFeeCollectorsCommand } from './commands/get-fee-collectors.ts'
+import { getFeeCollectorsCommand } from './commands/fee-collectors.ts'
+import { rdRecipientsCommand } from './commands/rd-recipients.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -23,5 +24,6 @@ zeroBytesCommand(program)
 toEtherCommand(program)
 aliasCommand(program)
 getFeeCollectorsCommand(program)
+rdRecipientsCommand(program)
 
 program.parse()

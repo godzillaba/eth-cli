@@ -1,0 +1,44 @@
+import { BigNumber, Contract, type providers } from 'ethers'
+import { getSourceCode } from './etherscan'
+
+import REWARD_DISTRIBUTOR_ABI from '../abi/RewardDistributor.json'
+import { Interface } from 'ethers/lib/utils'
+const iface = new Interface(REWARD_DISTRIBUTOR_ABI)
+
+export async function isRewardDistributor(
+  addr: string,
+  provider: providers.JsonRpcProvider
+): Promise<boolean> {
+  const chainId = (await provider.getNetwork()).chainId
+  const contractName = (await getSourceCode(chainId, addr)).ContractName
+  return contractName === 'RewardDistributor'
+}
+
+export async function getRewardDistributorRecipients(
+  addr: string,
+  provider: providers.JsonRpcProvider
+) {
+  const logs = await provider.getLogs({
+    address: addr,
+    topics: [iface.getEventTopic('RecipientsUpdated')],
+    fromBlock: 0,
+    toBlock: 'latest',
+  })
+
+  if (logs.length === 0) {
+    throw new Error('No events found')
+  }
+
+  const lastLog = logs[logs.length - 1]
+
+  const decoded = iface.decodeEventLog(
+    'RecipientsUpdated',
+    lastLog.data,
+    lastLog.topics
+  )
+
+  return {
+    recipients: decoded.recipients as string[],
+    weights: decoded.weights as BigNumber[],
+  }
+}
