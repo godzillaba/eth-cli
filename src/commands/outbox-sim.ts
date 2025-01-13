@@ -66,7 +66,9 @@ export function outboxSimCommand(program: Command) {
 
       const cmd = 'cast'
       const args =
-        `call --trace ${outbox} ${calldata} -r ${options.parentRpc}`.split(' ')
+        `call --trace ${outbox} ${calldata} -r ${assertDefined(options.parentRpc, 'Parent RPC Required')}`.split(
+          ' '
+        )
       // run the command
       await executeCommand(cmd.split(' ')[0], args)
     })
