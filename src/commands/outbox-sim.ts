@@ -24,9 +24,6 @@ export function outboxSimCommand(program: Command) {
       const childProvider = new providers.JsonRpcProvider(
         assertDefined(options.childRpc, 'Child RPC URL is required')
       )
-      const parentProvider = new providers.JsonRpcProvider(
-        assertDefined(options.parentRpc, 'Parent RPC URL is required')
-      )
 
       const outbox =
         options.outbox || outboxes[(await childProvider.getNetwork()).chainId]
