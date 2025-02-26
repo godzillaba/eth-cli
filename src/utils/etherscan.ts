@@ -7,6 +7,7 @@ function getApiKeyFromEnv(chainId: number) {
     421614: 'ARBISCAN_API_KEY',
     42170: 'NOVASCAN_API_KEY',
     8453: 'BASESCAN_API_KEY',
+    84532: 'BASESCAN_API_KEY',
   }
 
   return assertDefined(
@@ -22,7 +23,9 @@ function getEtherscanUrl(chainId: number) {
     42170: 'https://api-nova.arbiscan.io/api',
     421614: 'https://api-sepolia.arbiscan.io/api',
     11155111: 'https://api-sepolia.etherscan.io/api',
+    17000: 'https://api-holesky.etherscan.io/api',
     8453: 'https://api.basescan.org/api',
+    84532: 'https://api-sepolia.basescan.org/api',
   }
   return assertDefined(
     urls[chainId],

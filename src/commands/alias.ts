@@ -15,8 +15,6 @@ export function aliasCommand(program: Command) {
       const offset = BigInt(ADDRESS_ALIAS_OFFSET)
       const result = options.dealias ? asBigint - offset : asBigint + offset
       const maskedResult = result & ((1n << 160n) - 1n)
-      log.info(
-        `Resulting address: ${getAddress(maskedResult.toString(16).padStart(40, '0'))}`
-      )
+      log.info(getAddress(maskedResult.toString(16).padStart(40, '0')))
     })
 }
