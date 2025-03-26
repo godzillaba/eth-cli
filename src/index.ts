@@ -11,6 +11,7 @@ import { aliasCommand } from './commands/alias.ts'
 import { getFeeCollectorsCommand } from './commands/fee-collectors.ts'
 import { rdRecipientsCommand } from './commands/rd-recipients.ts'
 import { outboxSimCommand } from './commands/outbox-sim.ts'
+import { getNitroAddressesCommand } from './commands/get-nitro-addresses.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -27,5 +28,6 @@ aliasCommand(program)
 getFeeCollectorsCommand(program)
 rdRecipientsCommand(program)
 outboxSimCommand(program)
+getNitroAddressesCommand(program)
 
 program.parse()
