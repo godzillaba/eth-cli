@@ -13,6 +13,7 @@ import { rdRecipientsCommand } from './commands/rd-recipients.ts'
 import { outboxSimCommand } from './commands/outbox-sim.ts'
 import { getNitroAddressesCommand } from './commands/get-nitro-addresses.ts'
 import { safeTxHashCommand } from './commands/safe-tx-hash.ts'
+import { outboxRedeemCommand } from './commands/outbox-redeem.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -31,5 +32,6 @@ rdRecipientsCommand(program)
 outboxSimCommand(program)
 getNitroAddressesCommand(program)
 safeTxHashCommand(program)
+outboxRedeemCommand(program)
 
 program.parse()
