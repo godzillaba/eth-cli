@@ -3,7 +3,10 @@ import { Interface } from 'ethers/lib/utils'
 import { providers, Wallet } from 'ethers'
 import { assertDefined } from '../utils/misc'
 import { executeCommand } from '../utils/spawn'
-import { ChildToParentMessageWriter, ChildTransactionReceipt } from '@arbitrum/sdk'
+import {
+  ChildToParentMessageWriter,
+  ChildTransactionReceipt,
+} from '@arbitrum/sdk'
 
 const outboxes: { [chainId: number]: string } = {
   42161: '0x0B9857ae2D4A3DBe74ffE1d7DF045bb7F96E4840',
@@ -17,7 +20,10 @@ export function outboxRedeemCommand(program: Command) {
     .argument('<CHILD_TX>', 'Withdrawal tx on child')
     .option('-p, --parent-rpc <PARENT_RPC>', 'Parent RPC URL')
     .option('-c, --child-rpc <CHILD_RPC>', 'Child RPC URL')
-    .option('-k, --private-key <PRIVATE_KEY>', 'Private key to sign the transaction')
+    .option(
+      '-k, --private-key <PRIVATE_KEY>',
+      'Private key to sign the transaction'
+    )
     .option(
       '-o, --outbox <OUTBOX>',
       'Outbox address (not required unless child is unknown)'
@@ -33,7 +39,9 @@ export function outboxRedeemCommand(program: Command) {
         assertDefined(options.childRpc, 'Child RPC URL is required')
       )
 
-      const rec = new ChildTransactionReceipt(await childProvider.getTransactionReceipt(tx))
+      const rec = new ChildTransactionReceipt(
+        await childProvider.getTransactionReceipt(tx)
+      )
       const events = rec.getChildToParentEvents()
       if (events.length !== 1) {
         throw new Error(`Expected 1 event, got ${events.length}`)

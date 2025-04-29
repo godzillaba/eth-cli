@@ -14,6 +14,7 @@ import { outboxSimCommand } from './commands/outbox-sim.ts'
 import { getNitroAddressesCommand } from './commands/get-nitro-addresses.ts'
 import { safeTxHashCommand } from './commands/safe-tx-hash.ts'
 import { outboxRedeemCommand } from './commands/outbox-redeem.ts'
+import { retryableRedeemCommand } from './commands/retryable-redeem.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -33,5 +34,6 @@ outboxSimCommand(program)
 getNitroAddressesCommand(program)
 safeTxHashCommand(program)
 outboxRedeemCommand(program)
+retryableRedeemCommand(program)
 
 program.parse()
