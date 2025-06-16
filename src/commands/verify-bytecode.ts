@@ -6,6 +6,9 @@ import {
   defaultAbiCoder,
   getAddress,
   getContractAddress,
+  getCreate2Address,
+  hexDataSlice,
+  keccak256,
   type Result,
 } from 'ethers/lib/utils'
 import { extractMetadata, getProxyImpl } from '../utils/misc.ts'
@@ -51,7 +54,17 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
       bytecode: tx.data,
       address: getContractAddress(tx),
     }
-  } else {
+  } 
+  else if (getAddress(tx.to) === getAddress('0x4e59b44847b379578588920cA78FbF26c0B4956C')) {
+    const bytecode = hexDataSlice(tx.data, 32)
+    const salt = hexDataSlice(tx.data, 0, 32)
+    const address = getCreate2Address(tx.to, salt, keccak256(bytecode))
+    return {
+      bytecode,
+      address,
+    }
+  }
+  else {
     throw new Error('Not a creation transaction')
   }
 }
@@ -153,7 +166,7 @@ export function verifyBytecodeCommand(program: Command) {
       const constructorAbi = artifact.abi?.find(
         (abi: any) => abi.type === 'constructor'
       )
-      if (constructorAbi && constructorAbi.inputs) {
+      if (constructorAbi && constructorAbi.inputs && constructorAbi.inputs.length > 0) {
         const decoded = defaultAbiCoder.decode(
           constructorAbi.inputs,
           '0x' + bytecode.slice(artifactBytecode.length)

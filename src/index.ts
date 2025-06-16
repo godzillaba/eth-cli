@@ -15,6 +15,7 @@ import { getNitroAddressesCommand } from './commands/get-nitro-addresses.ts'
 import { safeTxHashCommand } from './commands/safe-tx-hash.ts'
 import { outboxRedeemCommand } from './commands/outbox-redeem.ts'
 import { retryableRedeemCommand } from './commands/retryable-redeem.ts'
+import { depositTokenCommand } from './commands/deposit-token.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -35,5 +36,6 @@ getNitroAddressesCommand(program)
 safeTxHashCommand(program)
 outboxRedeemCommand(program)
 retryableRedeemCommand(program)
+depositTokenCommand(program)
 
 program.parse()

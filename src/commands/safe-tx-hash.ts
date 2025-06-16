@@ -1,5 +1,6 @@
 import { Command } from '@commander-js/extra-typings'
 import { ethers } from 'ethers'
+import { getAddress, hexDataLength, hexDataSlice } from 'ethers/lib/utils'
 
 export function safeTxHashCommand(program: Command) {
   program
@@ -91,5 +92,39 @@ export function safeTxHashCommand(program: Command) {
       console.log('Domain Hash:', domainSeparator())
       console.log('Message Hash:', safeTxHash())
       console.log('Tx hash:', getTransactionHash())
+
+
+      if (getAddress(to) === getAddress('0x40A2aCCbd92BCA938b02010E17A5b8929b49130D') && options.operation === '1') {
+        // this is a delegatecall to MultiSendCallOnly, decode for convenience
+        const iface = new ethers.utils.Interface([
+          'function multiSend(bytes memory transactions)',
+        ]);
+        const decodedData = iface.decodeFunctionData('multiSend', data)[0]
+        console.log('MultiSend transactions:')
+        
+        let op: number = 0
+        let to: string = ''
+        let value: bigint = 0n
+        let dataLength: number = 0
+        let txData: string = ''
+        
+        let i = 0
+        while (i < hexDataLength(decodedData)) {
+          op = parseInt(hexDataSlice(decodedData, i, i + 1), 16)
+          i += 1
+          to = getAddress(hexDataSlice(decodedData, i, i + 20))
+          i += 20
+          value = BigInt(hexDataSlice(decodedData, i, i + 32))
+          i += 32
+          dataLength = parseInt(hexDataSlice(decodedData, i, i + 32), 16)
+          i += 32
+          txData = hexDataSlice(decodedData, i, i + dataLength)
+          i += dataLength;
+          if (op !== 0) {
+            throw new Error(`Unknown version: ${op}`)
+          }
+          console.log(`  - To: ${to}, Value: ${value}, Data: ${txData}`)
+        }
+      }
     })
 }
