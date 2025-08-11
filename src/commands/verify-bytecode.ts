@@ -54,8 +54,10 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
       bytecode: tx.data,
       address: getContractAddress(tx),
     }
-  } 
-  else if (getAddress(tx.to) === getAddress('0x4e59b44847b379578588920cA78FbF26c0B4956C')) {
+  } else if (
+    getAddress(tx.to) ===
+    getAddress('0x4e59b44847b379578588920cA78FbF26c0B4956C')
+  ) {
     const bytecode = hexDataSlice(tx.data, 32)
     const salt = hexDataSlice(tx.data, 0, 32)
     const address = getCreate2Address(tx.to, salt, keccak256(bytecode))
@@ -63,8 +65,7 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
       bytecode,
       address,
     }
-  }
-  else {
+  } else {
     throw new Error('Not a creation transaction')
   }
 }
@@ -166,7 +167,11 @@ export function verifyBytecodeCommand(program: Command) {
       const constructorAbi = artifact.abi?.find(
         (abi: any) => abi.type === 'constructor'
       )
-      if (constructorAbi && constructorAbi.inputs && constructorAbi.inputs.length > 0) {
+      if (
+        constructorAbi &&
+        constructorAbi.inputs &&
+        constructorAbi.inputs.length > 0
+      ) {
         const decoded = defaultAbiCoder.decode(
           constructorAbi.inputs,
           '0x' + bytecode.slice(artifactBytecode.length)

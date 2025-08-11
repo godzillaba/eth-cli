@@ -52,12 +52,14 @@ export async function getContractCreation(chainId: number, addrs: string[]) {
 }
 
 export async function getAbi(chainId: number, addr: string) {
-  return (
+  const res = (
     await hitApiEndpoint(
       chainId,
       `module=contract&action=getsourcecode&address=${addr}`
     )
   )[0].ABI
+
+  return typeof res === 'string' ? JSON.parse(res) : res
 }
 
 export async function getSourceCode(chainId: number, addr: string) {

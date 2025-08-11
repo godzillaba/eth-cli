@@ -1,4 +1,4 @@
-import { type providers } from 'ethers'
+import { providers } from 'ethers'
 import { log } from './logger'
 import { getAddress } from 'ethers/lib/utils'
 
@@ -19,11 +19,33 @@ export function assertDefined<T>(
   return value
 }
 
+export async function getImplOfClone(
+  provider: providers.JsonRpcProvider,
+  addr: string
+): Promise<string | null> {
+  const proxyCode = '0x363d3d373d3d3d363d73_5af43d82803e903d91602b57fd5bf3'
+  const code = (await provider.getCode(addr)).toLowerCase()
+  const implIdx = proxyCode.indexOf('_')
+  if (code.length != proxyCode.length + 39) {
+    return null
+  }
+  if (code.slice(0, implIdx) !== proxyCode.slice(0, implIdx)) {
+    return null // Not a clone
+  }
+  if (code.slice(implIdx + 40) !== proxyCode.slice(implIdx + 1)) {
+    return null // Not a clone
+  }
+  return getAddress(code.slice(implIdx, implIdx + 40))
+}
+
 export async function getProxyImpl(
   provider: providers.JsonRpcProvider,
   addr: string
 ): Promise<string> {
-  return wordToAddr(await provider.getStorageAt(addr, PROXY_IMPL_SLOT))
+  return (
+    (await getImplOfClone(provider, addr)) ??
+    wordToAddr(await provider.getStorageAt(addr, PROXY_IMPL_SLOT))
+  )
 }
 
 export async function getProxyAdmin(

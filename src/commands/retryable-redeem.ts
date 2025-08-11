@@ -1,9 +1,7 @@
 import { Command } from '@commander-js/extra-typings'
 import { providers, Wallet } from 'ethers'
 import { assertDefined } from '../utils/misc'
-import {
-  ParentTransactionReceipt,
-} from '@arbitrum/sdk'
+import { ParentTransactionReceipt } from '@arbitrum/sdk'
 
 export function retryableRedeemCommand(program: Command) {
   program
