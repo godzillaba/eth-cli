@@ -17,6 +17,8 @@ import { outboxRedeemCommand } from './commands/outbox-redeem.ts'
 import { retryableRedeemCommand } from './commands/retryable-redeem.ts'
 import { depositTokenCommand } from './commands/deposit-token.ts'
 import { getRolesCommand } from './commands/get-roles.ts'
+import { rlpDecodeCommand } from './commands/rlp-decode.ts'
+import { deployTestTokenCommand } from './commands/deploy-test-token.ts'
 
 program.name('eth-cli').version('0.0.1')
 
@@ -39,5 +41,7 @@ outboxRedeemCommand(program)
 retryableRedeemCommand(program)
 depositTokenCommand(program)
 getRolesCommand(program)
+rlpDecodeCommand(program)
+deployTestTokenCommand(program)
 
 program.parse()

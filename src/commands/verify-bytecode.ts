@@ -58,6 +58,7 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
     getAddress(tx.to) ===
     getAddress('0x4e59b44847b379578588920cA78FbF26c0B4956C')
   ) {
+    console.log('CREATE2 transaction detected')
     const bytecode = hexDataSlice(tx.data, 32)
     const salt = hexDataSlice(tx.data, 0, 32)
     const address = getCreate2Address(tx.to, salt, keccak256(bytecode))
