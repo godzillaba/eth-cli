@@ -21,7 +21,7 @@ import { rlpDecodeCommand } from './commands/rlp-decode.ts'
 import { deployTestTokenCommand } from './commands/deploy-test-token.ts'
 import { sendSafeTxCommand } from './commands/send-safe-tx.ts'
 
-program.name('eth-cli').version('0.0.1')
+program.name('esk').version('0.0.1')
 
 // Register commands
 withdrawCommand(program)

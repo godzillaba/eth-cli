@@ -3,5 +3,6 @@
 ```bash
 bun install
 bun compile
-./esk
+
+./esk # move this binary to somewhere in $PATH to "install"
 ```
