@@ -3,5 +3,8 @@
 ```bash
 bun install
 bun compile
-./esk
+
+./esk # move this binary to somewhere in $PATH to "install"
+
+eval "$(./esk completion zsh)" # bash is also supported, add to .bashrc or .zshrc to have completions
 ```
