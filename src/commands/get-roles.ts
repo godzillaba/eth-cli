@@ -1,7 +1,6 @@
 import { Command } from '@commander-js/extra-typings'
 import { log } from '../utils/logger'
-import { getAddress } from 'ethers/lib/utils'
-import { ADDRESS_ALIAS_OFFSET } from '@arbitrum/sdk/dist/lib/dataEntities/constants'
+import { EventFragment, getAddress } from 'ethers/lib/utils'
 import { getProxyImpl } from '../utils/misc'
 import { Contract, ethers } from 'ethers'
 import { getAbi } from '../utils/etherscan'
@@ -30,12 +29,18 @@ export function getRolesCommand(program: Command) {
       }
 
       const iface = new ethers.utils.Interface(abi)
-      const roleGrantedEvent = iface.getEvent('RoleGranted')
-      const roleRevokedEvent = iface.getEvent('RoleRevoked')
+
+      let roleGrantedEvent: EventFragment | undefined;
+      let roleRevokedEvent: EventFragment | undefined;
+      try {
+        roleGrantedEvent = iface.getEvent('RoleGranted')
+        roleRevokedEvent = iface.getEvent('RoleRevoked')
+      }
+      catch {}
 
       if (!roleGrantedEvent || !roleRevokedEvent) {
         log.error(
-          `No RoleGranted or RoleRevoked events found in ABI for address ${addr}`
+          `No RoleGranted or RoleRevoked events found in ABI for address ${addr}. Try setting the --proxy flag if this is a proxy contract.`
         )
         process.exit(1)
       }
