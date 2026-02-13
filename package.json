@@ -1,9 +1,9 @@
 {
-  "name": "eth-cli",
+  "name": "esk",
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "compile": "bun build src/index.ts --compile --outfile=eth-cli"
+    "compile": "bun build src/index.ts --compile --outfile=esk"
   },
   "devDependencies": {
     "@types/bun": "latest"

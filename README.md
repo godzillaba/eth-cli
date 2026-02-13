@@ -1,7 +1,7 @@
-# eth-cli
+# ESK - Ethereum Swiss Army Knife
 
 ```bash
 bun install
 bun compile
-./eth-cli
+./esk
 ```
