@@ -100,36 +100,11 @@ ${subcmdCases}
 compdef _esk esk`
 }
 
-function generateFish(commands: CommandInfo[]): string {
-  const subcommands = commands
-    .map(
-      (c) =>
-        `complete -c esk -n __fish_use_subcommand -a '${c.name}' -d '${escSingleQuote(c.description)}'`
-    )
-    .join('\n')
-
-  const options = commands
-    .filter((c) => c.options.length > 0)
-    .flatMap((c) =>
-      c.options.map(
-        (o) =>
-          `complete -c esk -n "__fish_seen_subcommand_from ${c.name}" -l '${o.flag.replace(/^--/, '')}' -d '${escSingleQuote(o.description)}'`
-      )
-    )
-    .join('\n')
-
-  return `# esk fish completion
-# Save to: ~/.config/fish/completions/esk.fish
-#   esk completion fish > ~/.config/fish/completions/esk.fish
-${subcommands}
-${options}`
-}
-
 export function completionCommand(program: Command) {
   program
     .command('completion')
     .description('Generate shell completion scripts')
-    .argument('<shell>', 'Shell type: bash, zsh, or fish')
+    .argument('<shell>', 'Shell type: bash or zsh')
     .action((shell: string) => {
       const commands = getCommands(program)
 
@@ -140,11 +115,8 @@ export function completionCommand(program: Command) {
         case 'zsh':
           console.log(generateZsh(commands))
           break
-        case 'fish':
-          console.log(generateFish(commands))
-          break
         default:
-          console.error(`Unsupported shell: ${shell}. Supported: bash, zsh, fish`)
+          console.error(`Unsupported shell: ${shell}. Supported: bash, zsh`)
           process.exit(1)
       }
     })
