@@ -73,7 +73,6 @@ function getDeploymentBytecodeAndAddress(tx: providers.TransactionResponse) {
 
 function prettifyInput(inputAbi: any, result: Result, leadingTabs: number) {
   if (inputAbi.internalType.startsWith('struct')) {
-    // we are printing a struct
     let res = `${'    '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}:\n`
     for (let i = 0; i < inputAbi.components.length; i++) {
       res +=
@@ -81,7 +80,6 @@ function prettifyInput(inputAbi: any, result: Result, leadingTabs: number) {
     }
     return res.slice(0, -1)
   } else {
-    // we're printing elementary
     return `${'    '.repeat(leadingTabs)}${inputAbi.internalType} ${inputAbi.name}: ${result}`
   }
 }
@@ -90,7 +88,7 @@ export function verifyBytecodeCommand(program: Command) {
   program
     .command('verify-bytecode')
     .description('Verify contract bytecode')
-    .argument('<ADDRESS>', 'Ccontract address')
+    .argument('<ADDRESS>', 'Contract address')
     .argument('<ARTIFACT_FILE>', 'Path to the build artifact file')
     .option('-r, --rpc <RPC>', 'RPC URL')
     .option(
@@ -114,14 +112,6 @@ export function verifyBytecodeCommand(program: Command) {
         log.info(`Contract Address: ${addr}`)
       }
 
-      // steps:
-      // - get the creation tx
-      // - make sure it is a creation tx
-      // - make sure the resulting contract address is the same as the one we are verifying
-      // - make sure the artifact bytecode is a prefix of the tx input data
-      // - decode the constructor arguments and display them
-
-      // get the creation tx
       const chainId = (await provider.getNetwork()).chainId
       const creationTxHash = (await getContractCreation(chainId, [addr]))[0]
         .txHash
@@ -131,27 +121,19 @@ export function verifyBytecodeCommand(program: Command) {
       const tx = await provider.getTransaction(creationTxHash)
       log.info(`Creation transaction: ${creationTxHash}`)
 
-      // make sure the resulting contract address is the same as the one we are verifying
-      // and get the deployment bytecode
       const { bytecode, address } = getDeploymentBytecodeAndAddress(tx)
       if (address !== addr) {
         throw new Error('Address mismatch')
       }
 
-      // make sure the artifact bytecode is a prefix of the deployment bytecode
       const artifactBytecode = getBytecode(artifact)
       let fullVerification = false
       if (bytecode.startsWith(artifactBytecode)) {
         fullVerification = true
       } else {
-        // try partial verification
-
-        // get artifact metadata
         const artifactMetadata = extractMetadata(getDeployedBytecode(artifact))
-        // get onchain metadata. use the deployed bytecode, not the tx data
         const onchainMetadata = extractMetadata(await provider.getCode(addr))
 
-        // remove metadata from both and compare
         const artifactBytecodeNoMetadata = artifactBytecode.replace(
           artifactMetadata,
           ''
@@ -164,7 +146,6 @@ export function verifyBytecodeCommand(program: Command) {
         }
       }
 
-      // decode the constructor arguments and display them
       const constructorAbi = artifact.abi?.find(
         (abi: any) => abi.type === 'constructor'
       )
