@@ -9,7 +9,7 @@ export function etherscanCreationCommand(program: Command) {
     .description(
       'Get information about contract creation transactions from etherscan'
     )
-    .argument('<ADDRESS>', 'Ccontract address')
+    .argument('<ADDRESS>', 'Contract address')
     .option('-c, --chain <CHAIN>', 'Chain ID')
     .option('-r, --rpc <RPC>', 'RPC URL')
     .action(async (addr: string, options) => {

@@ -9,7 +9,7 @@ export function etherscanAbiCommand(program: Command) {
   program
     .command('es-abi')
     .description('Get ABI of a contract from etherscan')
-    .argument('<ADDRESS>', 'Ccontract address')
+    .argument('<ADDRESS>', 'Contract address')
     .option('-p, --proxy', 'Get the proxy implementation ABI')
     .option('-r, --rpc <RPC>', 'RPC URL')
     .option('-i, --interface', 'Pretty print as a solidity interface')
