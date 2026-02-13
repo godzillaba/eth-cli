@@ -3,9 +3,6 @@ import { Contract, type providers } from 'ethers'
 const ARB_AGGREGATOR = '0x000000000000000000000000000000000000006D'
 const ARB_GAS_INFO = '0x000000000000000000000000000000000000006C'
 const ARB_OWNER_PUBLIC = '0x000000000000000000000000000000000000006b'
-/**
- * Get the batch posters of a chain.
- */
 export function getBatchPosters(
   provider: providers.JsonRpcProvider
 ): Promise<string[]> {
@@ -17,9 +14,6 @@ export function getBatchPosters(
   return contract.getBatchPosters()
 }
 
-/**
- * Get the L1 base fee collector of a batch poster.
- */
 export function getL1BaseFeeCollector(
   provider: providers.JsonRpcProvider,
   batchPoster: string
@@ -32,9 +26,6 @@ export function getL1BaseFeeCollector(
   return contract.getFeeCollector(batchPoster)
 }
 
-/**
- * Get the L1 surplus fee collector of a chain.
- */
 export function getL1SurplusFeeCollector(
   provider: providers.JsonRpcProvider
 ): Promise<string> {
@@ -46,9 +37,6 @@ export function getL1SurplusFeeCollector(
   return contract.getL1RewardRecipient()
 }
 
-/**
- * Get the L2 base fee collector of a chain.
- */
 export function getL2BaseFeeCollector(
   provider: providers.JsonRpcProvider
 ): Promise<string> {
@@ -60,9 +48,6 @@ export function getL2BaseFeeCollector(
   return contract.getInfraFeeAccount()
 }
 
-/**
- * Get the L2 surplus fee collector of a chain.
- */
 export function getL2SurplusFeeCollector(
   provider: providers.JsonRpcProvider
 ): Promise<string> {
