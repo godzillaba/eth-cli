@@ -1,3 +1,7 @@
+/**
+ * Generates shell completion scripts by introspecting registered Commander commands.
+ * Usage: `eval "$(esk completion bash)"` or `eval "$(esk completion zsh)"`
+ */
 import { Command } from '@commander-js/extra-typings'
 
 interface OptionInfo {
@@ -11,10 +15,12 @@ interface CommandInfo {
   options: OptionInfo[]
 }
 
+/** Introspects the Commander program to extract all registered subcommands and their options. */
 function getCommands(program: Command): CommandInfo[] {
   return program.commands.map((cmd) => ({
     name: cmd.name(),
     description: cmd.description(),
+    // Prefer long flags (--verbose) over short (-v) for readability; filter out options with neither
     options: cmd.options
       .map((o) => ({
         flag: (o.long ?? o.short) as string,
@@ -24,10 +30,12 @@ function getCommands(program: Command): CommandInfo[] {
   }))
 }
 
+/** Escapes single quotes for safe embedding in shell scripts (e.g. 'it'\''s' → it's). */
 function escSingleQuote(s: string): string {
   return s.replace(/'/g, "'\\''")
 }
 
+/** Generates a bash completion script using compgen/complete. */
 function generateBash(commands: CommandInfo[]): string {
   const names = commands.map((c) => c.name).join(' ')
   const optionCases = commands
@@ -57,6 +65,7 @@ ${optionCases}
 complete -F _esk esk`
 }
 
+/** Generates a zsh completion script using _arguments/_describe and compdef. */
 function generateZsh(commands: CommandInfo[]): string {
   const entries = commands
     .map((c) => `        '${c.name}:${escSingleQuote(c.description)}'`)
