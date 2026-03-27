@@ -1,7 +1,7 @@
 import { Command } from '@commander-js/extra-typings'
 import { log } from '../utils/logger'
 import { EventFragment, getAddress } from 'ethers/lib/utils'
-import { getProxyImpl } from '../utils/misc'
+import { getProxyImpl, loadAbiFromFile } from '../utils/misc'
 import { Contract, ethers } from 'ethers'
 import { getAbi } from '../utils/etherscan'
 
@@ -15,14 +15,17 @@ export function getRolesCommand(program: Command) {
       'Whether the contract is a proxy. Used to get the ABI to try to find role preimages'
     )
     .option('-r, --rpc <RPC>', 'RPC URL')
+    .option('-a, --abi <PATH>', 'Path to ABI file (Foundry artifact, Hardhat artifact, or raw ABI JSON)')
     .action(async (addr, options) => {
       const provider = new ethers.providers.JsonRpcProvider(options.rpc)
       addr = getAddress(addr.toLowerCase())
 
-      const abi = await getAbi(
-        (await provider.getNetwork()).chainId,
-        options.proxy ? await getProxyImpl(provider, addr) : addr
-      )
+      const abi = options.abi
+        ? loadAbiFromFile(options.abi)
+        : await getAbi(
+            (await provider.getNetwork()).chainId,
+            options.proxy ? await getProxyImpl(provider, addr) : addr
+          )
       if (!abi) {
         log.error(`No ABI found for address ${addr}`)
         process.exit(1)

@@ -1,6 +1,7 @@
 import { providers } from 'ethers'
 import { log } from './logger'
 import { getAddress } from 'ethers/lib/utils'
+import { readFileSync } from 'fs'
 
 const PROXY_IMPL_SLOT =
   '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
@@ -76,4 +77,16 @@ export function extractMetadata(bytecode: string): string {
   // get length from last 2 bytes
   const len = parseInt(bytecode.slice(-4), 16)
   return bytecode.slice(-4 - len * 2)
+}
+
+export function loadAbiFromFile(path: string): any[] {
+  const raw = JSON.parse(readFileSync(path, 'utf-8'))
+
+  // Raw ABI array
+  if (Array.isArray(raw)) return raw
+
+  // Foundry artifact (has "abi" at top level)
+  if (raw.abi) return raw.abi
+
+  throw new Error(`Could not extract ABI from ${path}. Expected a JSON array, Foundry artifact, or Hardhat artifact.`)
 }

@@ -54,7 +54,7 @@ _esk() {
 ${optionCases}
     esac
 }
-complete -F _esk esk`
+complete -o default -F _esk esk`
 }
 
 function generateZsh(commands: CommandInfo[]): string {
@@ -68,7 +68,7 @@ function generateZsh(commands: CommandInfo[]): string {
       const opts = c.options
         .map((o) => `'${o.flag}[${escSingleQuote(o.description)}]'`)
         .join(' ')
-      return `            ${c.name})\n                _arguments ${opts}\n                ;;`
+      return `            ${c.name})\n                _arguments ${opts} '*:file:_files'\n                ;;`
     })
     .join('\n')
 
@@ -83,7 +83,7 @@ _esk() {
 ${entries}
     )
 
-    _arguments '1:command:->cmds' '*::arg:->args'
+    _arguments -C '1:command:->cmds' '*::arg:->args'
 
     case $state in
         cmds)
