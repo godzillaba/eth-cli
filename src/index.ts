@@ -21,6 +21,7 @@ import { rlpDecodeCommand } from './commands/rlp-decode.ts'
 import { deployTestTokenCommand } from './commands/deploy-test-token.ts'
 import { sendSafeTxCommand } from './commands/send-safe-tx.ts'
 import { completionCommand } from './commands/completion.ts'
+import { chainOwnersCommand } from './commands/chain-owners.ts'
 
 program.name('esk').version('0.0.1')
 
@@ -47,5 +48,6 @@ rlpDecodeCommand(program)
 deployTestTokenCommand(program)
 sendSafeTxCommand(program)
 completionCommand(program)
+chainOwnersCommand(program)
 
 program.parse()
