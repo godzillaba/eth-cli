@@ -8,6 +8,11 @@ const PROXY_IMPL_SLOT =
 const PROXY_ADMIN_SLOT =
   '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103'
 
+export const OUTBOXES: { [chainId: number]: string } = {
+  42161: '0x0B9857ae2D4A3DBe74ffE1d7DF045bb7F96E4840',
+  42170: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
+}
+
 export function assertDefined<T>(
   value: T | undefined | null,
   message: string

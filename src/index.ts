@@ -20,6 +20,7 @@ import { getRolesCommand } from './commands/get-roles.ts'
 import { rlpDecodeCommand } from './commands/rlp-decode.ts'
 import { deployTestTokenCommand } from './commands/deploy-test-token.ts'
 import { sendSafeTxCommand } from './commands/send-safe-tx.ts'
+import { completionCommand } from './commands/completion.ts'
 
 program.name('esk').version('0.0.1')
 
@@ -45,5 +46,6 @@ getRolesCommand(program)
 rlpDecodeCommand(program)
 deployTestTokenCommand(program)
 sendSafeTxCommand(program)
+completionCommand(program)
 
 program.parse()

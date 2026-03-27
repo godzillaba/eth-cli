@@ -1,13 +1,8 @@
 import { Command } from '@commander-js/extra-typings'
 import { Interface } from 'ethers/lib/utils'
 import { providers } from 'ethers'
-import { assertDefined } from '../utils/misc'
+import { assertDefined, OUTBOXES } from '../utils/misc'
 import { executeCommand } from '../utils/spawn'
-
-const outboxes: { [chainId: number]: string } = {
-  42161: '0x0B9857ae2D4A3DBe74ffE1d7DF045bb7F96E4840',
-  42170: '0xD4B80C3D7240325D18E645B49e6535A3Bf95cc58',
-}
 
 export function outboxSimCommand(program: Command) {
   program
@@ -26,7 +21,7 @@ export function outboxSimCommand(program: Command) {
       )
 
       const outbox =
-        options.outbox || outboxes[(await childProvider.getNetwork()).chainId]
+        options.outbox || OUTBOXES[(await childProvider.getNetwork()).chainId]
       if (!outbox) {
         throw new Error('Outbox address is required')
       }
