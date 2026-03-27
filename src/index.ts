@@ -22,6 +22,7 @@ import { deployTestTokenCommand } from './commands/deploy-test-token.ts'
 import { sendSafeTxCommand } from './commands/send-safe-tx.ts'
 import { completionCommand } from './commands/completion.ts'
 import { chainOwnersCommand } from './commands/chain-owners.ts'
+import { safeSummaryCommand } from './commands/safe-summary.ts'
 
 program.name('esk').version('0.0.1')
 
@@ -49,5 +50,6 @@ deployTestTokenCommand(program)
 sendSafeTxCommand(program)
 completionCommand(program)
 chainOwnersCommand(program)
+safeSummaryCommand(program)
 
 program.parse()
