@@ -23,6 +23,7 @@ import { sendSafeTxCommand } from './commands/send-safe-tx.ts'
 import { completionCommand } from './commands/completion.ts'
 import { chainOwnersCommand } from './commands/chain-owners.ts'
 import { safeSummaryCommand } from './commands/safe-summary.ts'
+import { rcImplementationsCommand } from './commands/rc-implementations.ts'
 
 program.name('esk').version('0.0.1')
 
@@ -51,5 +52,6 @@ sendSafeTxCommand(program)
 completionCommand(program)
 chainOwnersCommand(program)
 safeSummaryCommand(program)
+rcImplementationsCommand(program)
 
 program.parse()
