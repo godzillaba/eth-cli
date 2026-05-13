@@ -24,6 +24,7 @@ import { completionCommand } from './commands/completion.ts'
 import { chainOwnersCommand } from './commands/chain-owners.ts'
 import { safeSummaryCommand } from './commands/safe-summary.ts'
 import { rcImplementationsCommand } from './commands/rc-implementations.ts'
+import { rcDecodeCommand } from './commands/rc-decode.ts'
 
 program.name('esk').version('0.0.1')
 
@@ -53,5 +54,6 @@ completionCommand(program)
 chainOwnersCommand(program)
 safeSummaryCommand(program)
 rcImplementationsCommand(program)
+rcDecodeCommand(program)
 
 program.parse()
