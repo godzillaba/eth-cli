@@ -8,10 +8,7 @@ import {
   getL2BaseFeeCollector,
   getL2SurplusFeeCollector,
 } from '../utils/arb-precompiles'
-import {
-  getRewardDistributorRecipients,
-  isRewardDistributor,
-} from '../utils/reward-distributor'
+import { getRewardDistributorRecipients } from '../utils/reward-distributor'
 
 export function getFeeCollectorsCommand(program: Command) {
   program
@@ -45,11 +42,9 @@ export function getFeeCollectorsCommand(program: Command) {
         const collector = await collectorPromise
         return {
           collector,
-          rdData:
-            options.distributor &&
-            (await isRewardDistributor(collector, provider))
-              ? await getRewardDistributorRecipients(collector, provider)
-              : null,
+          rdData: options.distributor
+            ? await getRewardDistributorRecipients(collector, provider)
+            : null,
         }
       }
       function fmtRdData(

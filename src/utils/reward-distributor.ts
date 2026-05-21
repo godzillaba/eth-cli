@@ -26,7 +26,7 @@ export async function getRewardDistributorRecipients(
   })
 
   if (logs.length === 0) {
-    throw new Error('No events found')
+    return null
   }
 
   const lastLog = logs[logs.length - 1]
