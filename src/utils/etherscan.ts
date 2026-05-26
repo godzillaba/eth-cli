@@ -1,23 +1,27 @@
 import { assertDefined } from './misc'
 
-function getApiKeyFromEnv() {
-  return assertDefined(
+const BLOCKSCOUT_INSTANCES: { [chainId: number]: string } = {
+  42170: 'https://arbitrum-nova.blockscout.com',
+}
+
+function getApiUrl(chainId: number) {
+  const blockscout = BLOCKSCOUT_INSTANCES[chainId]
+  if (blockscout) {
+    return `${blockscout}/api?`
+  }
+  const apiKey = assertDefined(
     process.env.ETHERSCAN_API_KEY,
     `ETHERSCAN_API_KEY not set`
   )
-}
-
-function getEtherscanUrl(chainId: number) {
-  return `https://api.etherscan.io/v2/api?chainid=${chainId}&`
+  return `https://api.etherscan.io/v2/api?chainid=${chainId}&apikey=${apiKey}&`
 }
 
 async function hitApiEndpoint(chainId: number, query: string) {
-  const apiKey = getApiKeyFromEnv()
-  const url = getEtherscanUrl(chainId)
-  const response = await fetch(`${url}${query}&apikey=${apiKey}`)
+  const url = `${getApiUrl(chainId)}${query}`
+  const response = await fetch(url)
   const json = await response.json()
   if (!json.result) {
-    throw new Error(`${url}?${query}\n${JSON.stringify(json)}`)
+    throw new Error(`${url}\n${JSON.stringify(json)}`)
   }
   return json.result
 }
