@@ -2,6 +2,7 @@ import { program } from '@commander-js/extra-typings'
 import { withdrawCommand } from './commands/withdraw.ts'
 import { etherscanCreationCommand } from './commands/es-creation.ts'
 import { etherscanAbiCommand } from './commands/es-abi.ts'
+import { etherscanNameCommand } from './commands/es-name.ts'
 import { proxyAdminCommand } from './commands/proxy-admin.ts'
 import { proxyImplCommand } from './commands/proxy-impl.ts'
 import { verifyBytecodeCommand } from './commands/verify-bytecode.ts'
@@ -32,6 +33,7 @@ program.name('esk').version('0.0.1')
 withdrawCommand(program)
 etherscanCreationCommand(program)
 etherscanAbiCommand(program)
+etherscanNameCommand(program)
 proxyAdminCommand(program)
 proxyImplCommand(program)
 verifyBytecodeCommand(program)

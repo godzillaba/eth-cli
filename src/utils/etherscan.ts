@@ -48,3 +48,7 @@ export async function getSourceCode(chainId: number, addr: string) {
     )
   )[0]
 }
+
+export async function getContractName(chainId: number, addr: string) {
+  return (await getSourceCode(chainId, addr)).ContractName
+}
