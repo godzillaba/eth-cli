@@ -2,6 +2,7 @@ import { assertDefined } from './misc'
 
 const BLOCKSCOUT_INSTANCES: { [chainId: number]: string } = {
   42170: 'https://arbitrum-nova.blockscout.com',
+  46630: "https://explorer.testnet.chain.robinhood.com"
 }
 
 function getApiUrl(chainId: number) {
