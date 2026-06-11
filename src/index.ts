@@ -15,7 +15,7 @@ import { outboxSimCommand } from './commands/outbox-sim.ts'
 import { getNitroAddressesCommand } from './commands/get-nitro-addresses.ts'
 import { safeTxHashCommand } from './commands/safe-tx-hash.ts'
 import { outboxRedeemCommand } from './commands/outbox-redeem.ts'
-import { retryableRedeemCommand } from './commands/retryable-redeem.ts'
+import { trackDepositCommand } from './commands/track-deposit.ts'
 import { depositTokenCommand } from './commands/deposit-token.ts'
 import { getRolesCommand } from './commands/get-roles.ts'
 import { rlpDecodeCommand } from './commands/rlp-decode.ts'
@@ -46,7 +46,7 @@ outboxSimCommand(program)
 getNitroAddressesCommand(program)
 safeTxHashCommand(program)
 outboxRedeemCommand(program)
-retryableRedeemCommand(program)
+trackDepositCommand(program)
 depositTokenCommand(program)
 getRolesCommand(program)
 rlpDecodeCommand(program)
