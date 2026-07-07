@@ -48,11 +48,15 @@ export function getFeeCollectorsCommand(program: Command) {
         }
       }
       function fmtRdData(
-        rdData: { recipients: string[]; weights: BigNumber[] } | null,
+        rdData: {
+          owner: string
+          recipients: string[]
+          weights: BigNumber[]
+        } | null,
         prefix: string
       ) {
         return rdData
-          ? `(RD):\n${rdData.recipients.map((r, i) => `${prefix}${r}: ${rdData.weights[i].toNumber() / 100}%`).join('\n')}`
+          ? `(RD owned by ${rdData.owner}):\n${rdData.recipients.map((r, i) => `${prefix}${r}: ${rdData.weights[i].toNumber() / 100}%`).join('\n')}`
           : ''
       }
 

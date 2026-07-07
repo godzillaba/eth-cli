@@ -37,7 +37,14 @@ export async function getRewardDistributorRecipients(
     lastLog.topics
   )
 
+  const owner: string = await new Contract(
+    addr,
+    REWARD_DISTRIBUTOR_ABI,
+    provider
+  ).owner()
+
   return {
+    owner,
     recipients: decoded.recipients as string[],
     weights: decoded.weights as BigNumber[],
   }
