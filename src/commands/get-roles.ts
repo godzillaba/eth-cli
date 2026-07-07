@@ -4,6 +4,7 @@ import { EventFragment, getAddress } from 'ethers/lib/utils'
 import { getProxyImpl, loadAbiFromFile } from '../utils/misc'
 import { Contract, ethers } from 'ethers'
 import { getAbi } from '../utils/etherscan'
+import { getLogsPaginated } from '../utils/get-logs'
 
 export function getRolesCommand(program: Command) {
   program
@@ -62,18 +63,14 @@ export function getRolesCommand(program: Command) {
         }
       }
 
-      const grantedEvents = await provider.getLogs({
+      const grantedEvents = await getLogsPaginated(provider, {
         address: addr,
         topics: [iface.getEventTopic(roleGrantedEvent)],
-        fromBlock: 0,
-        toBlock: 'latest',
       })
 
-      const revokedEvents = await provider.getLogs({
+      const revokedEvents = await getLogsPaginated(provider, {
         address: addr,
         topics: [iface.getEventTopic(roleRevokedEvent)],
-        fromBlock: 0,
-        toBlock: 'latest',
       })
 
       const allEvents = [...grantedEvents, ...revokedEvents].sort(

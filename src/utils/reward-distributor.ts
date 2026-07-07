@@ -1,5 +1,6 @@
 import { BigNumber, Contract, type providers } from 'ethers'
 import { getSourceCode } from './etherscan'
+import { getLogsPaginated } from './get-logs'
 
 import REWARD_DISTRIBUTOR_ABI from '../abi/RewardDistributor.json'
 import { Interface } from 'ethers/lib/utils'
@@ -18,11 +19,9 @@ export async function getRewardDistributorRecipients(
   addr: string,
   provider: providers.JsonRpcProvider
 ) {
-  const logs = await provider.getLogs({
+  const logs = await getLogsPaginated(provider, {
     address: addr,
     topics: [iface.getEventTopic('RecipientsUpdated')],
-    fromBlock: 0,
-    toBlock: 'latest',
   })
 
   if (logs.length === 0) {

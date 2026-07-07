@@ -1,6 +1,7 @@
 import { Command } from '@commander-js/extra-typings'
 import { log } from '../utils/logger'
 import { providers, utils } from 'ethers'
+import { getLogsPaginated } from '../utils/get-logs'
 
 const ARB_OWNER = '0x0000000000000000000000000000000000000070'
 const EVENT_TOPIC =
@@ -19,15 +20,13 @@ export function chainOwnersCommand(program: Command) {
       const provider = new providers.JsonRpcProvider(options.rpc)
 
       const [addLogs, removeLogs] = await Promise.all([
-        provider.getLogs({
+        getLogsPaginated(provider, {
           address: ARB_OWNER,
           topics: [EVENT_TOPIC, ADD_CHAIN_OWNER],
-          fromBlock: 0,
         }),
-        provider.getLogs({
+        getLogsPaginated(provider, {
           address: ARB_OWNER,
           topics: [EVENT_TOPIC, REMOVE_CHAIN_OWNER],
-          fromBlock: 0,
         }),
       ])
 
