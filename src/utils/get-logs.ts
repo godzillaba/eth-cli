@@ -1,7 +1,8 @@
 import type { providers } from 'ethers'
 
-// Try the whole range in one request; on any error, split in half and recurse.
-// A single-block failure can't be a size problem, so it rethrows.
+// Try the whole range in one request; on a JSON-RPC error, split in half and
+// recurse. Network and other errors rethrow, as does a single-block failure
+// (which can't be a size problem).
 export async function getLogsPaginated(
   provider: providers.JsonRpcProvider,
   filter: providers.Filter
@@ -23,11 +24,19 @@ async function getRange(
   try {
     return await provider.getLogs({ ...filter, fromBlock: from, toBlock: to })
   } catch (err) {
-    if (from >= to) throw err
+    if (from >= to || !isJsonRpcError(err)) throw err
     const mid = Math.floor((from + to) / 2)
     return [
       ...(await getRange(provider, filter, from, mid)),
       ...(await getRange(provider, filter, mid + 1, to)),
     ]
   }
+}
+
+// A JSON-RPC error response carries a numeric code, either directly on the
+// error (websocket/batch providers) or on the nested .error of the ethers v5
+// SERVER_ERROR wrapper (http providers). Transport failures never have one.
+function isJsonRpcError(err: unknown): boolean {
+  const e = err as { code?: unknown; error?: { code?: unknown } }
+  return typeof e?.code === 'number' || typeof e?.error?.code === 'number'
 }
