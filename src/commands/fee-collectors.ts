@@ -1,6 +1,6 @@
 import { Command } from '@commander-js/extra-typings'
 import { log } from '../utils/logger'
-import { BigNumber, providers } from 'ethers'
+import { Contract, providers } from 'ethers'
 import {
   getBatchPosters,
   getL1BaseFeeCollector,
@@ -16,57 +16,73 @@ export function getFeeCollectorsCommand(program: Command) {
     .description('Get fee collectors and batch posters of a chain.')
     .option('-r, --rpc <RPC>', 'RPC URL')
     .option('-d, --distributor', 'Show RewardDistributor recipients')
+    .option('-c, --routers', 'Detect ChildToParentRewardRouters')
     .action(async options => {
       const provider = new providers.JsonRpcProvider(options.rpc)
       const tab = '  '
 
+      async function getRouterTarget(addr: string): Promise<string | null> {
+        if (!options.routers) return null
+        try {
+          return await new Contract(
+            addr,
+            ['function parentChainTarget() view returns (address)'],
+            provider
+          ).parentChainTarget()
+        } catch {
+          return null
+        }
+      }
+
+      async function getCollectorData(collectorPromise: Promise<string>) {
+        const collector = await collectorPromise
+        const rdData = options.distributor
+          ? await getRewardDistributorRecipients(collector, provider)
+          : null
+        const [routerTarget, recipientTargets] = await Promise.all([
+          getRouterTarget(collector),
+          Promise.all((rdData?.recipients ?? []).map(getRouterTarget)),
+        ])
+        return { collector, rdData, routerTarget, recipientTargets }
+      }
+
       const [posters, l1Surplus, l2Base, l2Surplus] = await Promise.all([
         (async () => {
           const posters = await getBatchPosters(provider)
-          const l1BaseCollectorsAndRdInfo = await Promise.all(
+          const collectorData = await Promise.all(
             posters.map(poster =>
-              getRdData(getL1BaseFeeCollector(provider, poster))
+              getCollectorData(getL1BaseFeeCollector(provider, poster))
             )
           )
-          return {
-            posters,
-            collectors: l1BaseCollectorsAndRdInfo.map(x => x.collector),
-            rdDatas: l1BaseCollectorsAndRdInfo.map(x => x.rdData),
-          }
+          return { posters, collectorData }
         })(),
-        getRdData(getL1SurplusFeeCollector(provider)),
-        getRdData(getL2BaseFeeCollector(provider)),
-        getRdData(getL2SurplusFeeCollector(provider)),
+        getCollectorData(getL1SurplusFeeCollector(provider)),
+        getCollectorData(getL2BaseFeeCollector(provider)),
+        getCollectorData(getL2SurplusFeeCollector(provider)),
       ])
-      async function getRdData(collectorPromise: Promise<string>) {
-        const collector = await collectorPromise
-        return {
-          collector,
-          rdData: options.distributor
-            ? await getRewardDistributorRecipients(collector, provider)
-            : null,
-        }
+
+      function fmtRouter(target: string | null) {
+        return target ? ` (C2PRouter -> ${target})` : ''
       }
-      function fmtRdData(
-        rdData: {
-          owner: string
-          recipients: string[]
-          weights: BigNumber[]
-        } | null,
+      function fmtCollector(
+        data: Awaited<ReturnType<typeof getCollectorData>>,
         prefix: string
       ) {
-        return rdData
-          ? `(RD owned by ${rdData.owner}):\n${rdData.recipients.map((r, i) => `${prefix}${r}: ${rdData.weights[i].toNumber() / 100}%`).join('\n')}`
-          : ''
+        const { collector, rdData, routerTarget, recipientTargets } = data
+        let str = `${collector}${fmtRouter(routerTarget)}`
+        if (rdData) {
+          str += ` (RD owned by ${rdData.owner}):\n${rdData.recipients.map((r, i) => `${prefix}${r}: ${rdData.weights[i].toNumber() / 100}%${fmtRouter(recipientTargets[i])}`).join('\n')}`
+        }
+        return str
       }
 
       let str = ''
-      str += `L2 Base Collector: ${l2Base.collector} ${fmtRdData(l2Base.rdData, tab)}`
-      str += `\nL2 Surplus Collector: ${l2Surplus.collector} ${fmtRdData(l2Surplus.rdData, tab)}`
-      str += `\nL1 Surplus Collector: ${l1Surplus.collector} ${fmtRdData(l1Surplus.rdData, tab)}`
+      str += `L2 Base Collector: ${fmtCollector(l2Base, tab)}`
+      str += `\nL2 Surplus Collector: ${fmtCollector(l2Surplus, tab)}`
+      str += `\nL1 Surplus Collector: ${fmtCollector(l1Surplus, tab)}`
       str += `\nBatch Posters -> L1 Base Collector:`
       for (let i = 0; i < posters.posters.length; i++) {
-        str += `\n${tab}${posters.posters[i]} -> ${posters.collectors[i]} ${fmtRdData(posters.rdDatas[i], tab + tab)}`
+        str += `\n${tab}${posters.posters[i]} -> ${fmtCollector(posters.collectorData[i], tab + tab)}`
       }
 
       log.info(str)
