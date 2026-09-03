@@ -2,6 +2,7 @@ import { Command } from '@commander-js/extra-typings'
 import { log } from '../utils/logger'
 import { providers, utils } from 'ethers'
 import { getLogsPaginated } from '../utils/get-logs'
+import { getInitialChainOwner } from '../utils/arbos-state'
 
 const ARB_OWNER = '0x0000000000000000000000000000000000000070'
 const EVENT_TOPIC =
@@ -19,7 +20,10 @@ export function chainOwnersCommand(program: Command) {
     .action(async options => {
       const provider = new providers.JsonRpcProvider(options.rpc)
 
-      const [addLogs, removeLogs] = await Promise.all([
+      // the genesis owner is written directly into state without an OwnerActs
+      // event, so seed it from the chain config before replaying events
+      const [initialOwner, addLogs, removeLogs] = await Promise.all([
+        getInitialChainOwner(provider),
         getLogsPaginated(provider, {
           address: ARB_OWNER,
           topics: [EVENT_TOPIC, ADD_CHAIN_OWNER],
@@ -35,6 +39,13 @@ export function chainOwnersCommand(program: Command) {
       )
 
       const owners = new Set<string>()
+      if (initialOwner) {
+        owners.add(initialOwner)
+      } else {
+        log.warning(
+          'No chain config in ArbOS state; if the initial chain owner was never removed, it will be missing below'
+        )
+      }
       for (const event of events) {
         const [calldata] = utils.defaultAbiCoder.decode(['bytes'], event.data)
         const [address] = utils.defaultAbiCoder.decode(
