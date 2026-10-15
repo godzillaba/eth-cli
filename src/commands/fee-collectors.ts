@@ -36,9 +36,10 @@ export function getFeeCollectorsCommand(program: Command) {
 
       async function getCollectorData(collectorPromise: Promise<string>) {
         const collector = await collectorPromise
-        const rdData = options.distributor
-          ? await getRewardDistributorRecipients(collector, provider)
-          : null
+        const rdData =
+          options.distributor && (await provider.getCode(collector)) !== '0x'
+            ? await getRewardDistributorRecipients(collector, provider)
+            : null
         const [routerTarget, recipientTargets] = await Promise.all([
           getRouterTarget(collector),
           Promise.all((rdData?.recipients ?? []).map(getRouterTarget)),
